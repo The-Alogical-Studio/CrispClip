@@ -30,9 +30,6 @@ void setup() {
   .setRange(0, 1000)
   .setSize(200, 30)
   ;
-  
-  movie = new Movie(this, "C:\\Users\\nicol\\Documents\\Processing\\CrispClip\\test.mov");
-  movie.loop();
 }
 
 void selectFile(){
@@ -67,13 +64,15 @@ void movieEvent(Movie movie) {
 
 void draw() {
   background(120);
-  if(millis() - tmr >= 50){  
-    sl.setValue(movie.time() / movie.duration() * 1000);
-    tmr = millis();
+  if(movie != null){
+    if(millis() - tmr >= 50){  
+      sl.setValue(movie.time() / movie.duration() * 1000);
+      tmr = millis();
+    }
+    
+    
+    image(movie, 0, 0);
   }
-  
-  
-  image(movie, 0, 0);
 }
 
 void fileSelected(File file){
