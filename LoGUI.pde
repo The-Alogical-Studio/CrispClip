@@ -15,7 +15,7 @@ class Button {
   }
 
   void tick() {
-    if (mousePressed && flag != mousePressed && abs((x + (w >> 1)) - mouseX) <= (w/2) && abs((y + (h >> 1)) - mouseY) <= (h / 2)) {
+    if (mouseOPressed && flag != mousePressed && abs((x + (w >> 1)) - mouseX) <= (w/2) && abs((y + (h >> 1)) - mouseY) <= (h / 2)) {
       method(name);
       flag = mousePressed;
     } else if (!mousePressed) {
@@ -82,7 +82,7 @@ class Toggle {
   }
 
   void tick() {
-    if (mousePressed && flag != mousePressed && abs((x + (w >> 1)) - mouseX) <= (w/2) && abs((y + (h >> 1)) - mouseY) <= (h/2)) {
+    if (mouseOPressed && flag != mousePressed && abs((x + (w >> 1)) - mouseX) <= (w/2) && abs((y + (h >> 1)) - mouseY) <= (h/2)) {
       value = !value;
       flag = mousePressed;
     } else if (!mousePressed) {
@@ -152,7 +152,7 @@ class Dropdown {
 
 class Window {
   boolean flag = false;
-  int x, y, w, h, d;
+  int x, y, w, h, d, bcol, tcol;
   String name;
   Slider[] slds;
   Button[] btns;
@@ -166,16 +166,18 @@ class Window {
     w = pw;
     h = ph;
     d = dh;
+    bcol = 255;
+    tcol = 120;
   }
 
   void tick() {
-    fill(255);
+    fill(bcol);
     rect(x, y, w, h);
-    fill(150);
+    fill(tcol);
     rect(x, y, w, d);
     fill(255);
-    text(name, x, y + (d/2));
-    if (flag || (mousePressed && abs((x + (w >> 1)) - mouseX) <= (w/2) && abs((y + (d >> 1)) - mouseY) <= (d / 2))) {
+    text(name, x, y + ((float) d * 0.75));
+    if (flag || (mouseOPressed && abs((x + (w >> 1)) - mouseX) <= (w/2) && abs((y + (d >> 1)) - mouseY) <= (d / 2))) {
       if (!mousePressed) {
         flag = false;
         return;
