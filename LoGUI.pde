@@ -152,7 +152,7 @@ class Dropdown {
 
 class Window {
   boolean flag = false;
-  int x, y, w, h, d, bcol, tcol;
+  int x, y, w, h, d, bcol, tcol, tDX, tDY;
   String name;
   Slider[] slds;
   Button[] btns;
@@ -182,8 +182,13 @@ class Window {
         flag = false;
         return;
       }
-      int deltaX = mouseX - x;
-      int deltaY = mouseY - y;
+      if (!flag) {
+        tDX = mouseX - x;
+        tDY = mouseY - y;
+      }
+      int deltaX = mouseX - x - tDX;
+      int deltaY = mouseY - y - tDY;
+
       for (int i = 0; i < slds.length; i++) {
         slds[i].move(deltaX, deltaY);
       }
@@ -196,8 +201,8 @@ class Window {
       for (int i = 0; i < drops.length; i++) {
         drops[i].move(deltaX, deltaY);
       }
-      x = mouseX;
-      y = mouseY;
+      x += deltaX;
+      y += deltaY;
       flag = true;
     }
 
