@@ -1,19 +1,26 @@
-import controlP5.*;
-ControlP5 cp5;
+//import controlP5.*;
+//ControlP5 cp5;
 import processing.video.*;
 
 Movie[] movie;
 int count = 0;
 int player = 0;
 boolean flag = false;
-Slider sl;
 int tmr = 0;
 
 boolean render_flag = false;
 
+Slider sld;
+Button play, restart, selectFile, render;
+
+
+
 void setup() {
   size(1000, 500, P3D);
+  /*
   cp5 = new ControlP5(this);
+  cp5.setFont(createFont("Consolas", 14));
+  
   cp5.addButton("play")
     .linebreak()
     .setPosition(680, 15)
@@ -39,6 +46,12 @@ void setup() {
     .linebreak()
     .setPosition(680, 90)
     ;
+  */
+  play = new Button(loadImage("play.png"), 680, 15, 50, 30, "play");
+  sld = new Slider(loadImage("sld1.png"), loadImage("sld2.png"), 680, 50, 200, 30, 0, 1000);
+  selectFile = new Button(loadImage("selectFile.png"), 780, 15, 50, 30, "selectFile");
+  restart = new Button(loadImage("restart.png"), 880, 15, 50, 30, "restart");
+  render = new Button(loadImage("render.png"), 680, 90, 50, 30, "render");
 }
 
 void selectFile() {
@@ -68,11 +81,11 @@ void render() {
   restart();
 }
 
-void position(float value) {
+void position() {
   if (movie == null) return;
-  float position = value / 1000;
+  float position = sld.value / 1000;
   position = movie[player].duration() * position;
-  if (abs(position - movie[player].time()) <= 0.01) return;
+  if (abs(position - movie[player].time()) <= 0.1) return;
   movie[player].jump(position);
 }
 
@@ -87,9 +100,15 @@ void movieEvent(Movie movie) {
 
 void draw() {
   background(120);
+  sld.tick();
+  play.tick();
+  restart.tick();
+  selectFile.tick();
+  render.tick();
+  position();
   if (movie != null) {
     if (millis() - tmr >= 50) {
-      sl.setValue(movie[player].time() / movie[player].duration() * 1000);
+      sld.value = movie[player].time() / movie[player].duration() * 1000;
 
       if (movie[player].duration() - movie[player].time() <= 0.01f && player + 1 != movie.length) {
         movie[player].stop();
@@ -101,7 +120,7 @@ void draw() {
     }
 
     if (!render_flag) {
-      image(movie[player], 0, 0);
+      image(movie[player], 0, 0, 640, 360);
     }
   }
 }
