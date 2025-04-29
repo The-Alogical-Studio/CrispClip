@@ -152,7 +152,7 @@ class Dropdown {
 
 class Window {
   boolean flag = false;
-  boolean preventOverlapping = false; // New attribute to control overlapping
+  boolean preventOverlapping = false; 
   int x, y, w, h, d, bcol, tcol, tDX, tDY;
   String name;
   Slider[] slds;
@@ -191,26 +191,26 @@ class Window {
         flag = true;
       }
 
-      // Calculate movement delta
+      
       int deltaX = mouseX - x - tDX;
       int deltaY = mouseY - y - tDY;
 
-      // Move the window
+      
       if (deltaX != 0 || deltaY != 0) {
         x += deltaX;
         y += deltaY;
 
-        // Move the elements inside the window only when the window moves
+        
         moveElements(deltaX, deltaY);
 
-        // Only prevent overlapping if the flag is set
+        
         if (preventOverlapping) {
             preventOverlap();
         }
       }
     }
 
-    // Tick all elements inside the window
+    
     for (int i = 0; i < slds.length; i++) {
       slds[i].tick();
     }
@@ -226,7 +226,7 @@ class Window {
   }
 
   void moveElements(int deltaX, int deltaY) {
-    // Move all elements inside the window by deltaX and deltaY
+    
     for (int i = 0; i < slds.length; i++) {
       slds[i].move(deltaX, deltaY);
     }
@@ -248,19 +248,19 @@ class Window {
 
     Window other = this == win_player ? win_modify : win_player;
     
-    // Calculate overlap distances
+    
     float overlapLeft = (x + w) - other.x;
     float overlapRight = (other.x + other.w) - x;
     float overlapTop = (y + h) - other.y;
     float overlapBottom = (other.y + other.h) - y;
 
-    // Find smallest overlap
+    
     float minOverlap = min(min(overlapLeft, overlapRight), min(overlapTop, overlapBottom));
 
     int deltaX = 0;
     int deltaY = 0;
 
-    // Apply the smallest overlap correction
+    
     if (minOverlap == overlapLeft) {
         deltaX = -(int)(overlapLeft + 10);
     } else if (minOverlap == overlapRight) {
@@ -271,7 +271,7 @@ class Window {
         deltaY = (int)(overlapBottom + 10);
     }
 
-    // Move window and its elements
+    
     x += deltaX;
     y += deltaY;
     moveElements(deltaX, deltaY);

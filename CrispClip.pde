@@ -1,5 +1,4 @@
-//import controlP5.*;
-//ControlP5 cp5;
+
 import processing.video.*;
 
 Movie[] movie;
