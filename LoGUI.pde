@@ -318,3 +318,135 @@ class Tab {
 float clamp(float val, float minV, float maxV) {
   return min(max(val, minV), maxV);
 }
+
+
+class TextField {
+
+  char[] value;
+  int cnt, trc;
+  int x, y, w, h, tmr = 0;
+  boolean flag = false, isTaken;
+
+
+  TextField(int px, int py, int pw, int ph, int buf) {
+    cnt = 0;
+    x = px;
+    y = py;
+    w = pw;
+    h = ph;
+    value = new char[buf + 1];
+    value[0] = '\0';
+  }
+
+  void tick() {
+    if (isTaken) {
+      if (keyPressed && (!flag || millis() - tmr >= 200)) {
+        flag = true;
+        if (key != '' && keyCode == 0) {
+          freeKey(value, trc);
+          value[trc] = key;
+          trc += 1;
+          cnt += 1;
+        } else if (key == '') {
+          deleteKey(value, trc-1);
+          trc -= 1;
+          cnt -= 1;
+        } else {
+          switch(keyCode) {
+          case LEFT:
+            trc -= 1;
+            break;
+          case RIGHT:
+            trc += 1;
+            break;
+          }
+        }
+        cnt = (int) clamp(cnt, 0, value.length - 1);
+        trc = (int) clamp(trc, 0, value.length - 1);
+        tmr = millis();
+      } else if (!keyPressed) {
+        flag = false;
+      }
+
+      if (mouseOPressed) {
+        isTaken = false;
+      }
+    }
+
+    if (mouseOPressed && flag != mousePressed && abs((x + (w >> 1)) - mouseX) <= (w/2) && abs((y + (h >> 1)) - mouseY) <= (h / 2)) {
+      isTaken = true;
+    }
+
+    fill(50);
+    rect(x, y, w, h);
+    fill(255);
+    text(value, 0, cnt, x, y + h/2);
+    stroke(255);
+    line(x + 9.75 * trc, y, x + 9.75 * trc, y + h);
+    stroke(0);
+  }
+}
+
+class MainMenu {
+  String[] top_text;
+  String[][] funcs;
+  int value;
+  boolean spamclick, closer;
+
+  boolean[] flg;
+
+  MainMenu(int count) {
+    top_text = new String[count];
+    funcs = new String[count][];
+    flg = new boolean[count];
+  }
+
+  void addNextMenu(int id, String name, String[] dropNames) {
+    top_text[id] = name;
+    funcs[id] = dropNames;
+  }
+
+  void tick() {
+    for (int i = 0; i < top_text.length; i++) {
+
+      if (mouseOPressed && spamclick != mousePressed && abs((i * (20 * top_text[i].length()) + (20 * top_text[i].length() >> 1)) - mouseX) <= (10 * top_text[i].length()) && abs(15 - mouseY) <= 15) {
+        value = i;
+        flg[i] = !flg[i];
+        closer = true;
+        spamclick = mousePressed;
+      } else {
+        spamclick = false;
+      }
+
+      if (flg[i]) {
+        for (int j = 0; j < funcs[i].length; j++) {
+          rect(i * (20 * top_text[i].length()), 30 + j * 30, 20 * top_text[i].length(), 30);
+          fill(0);
+          text(funcs[i][j], i * (20 * top_text[i].length()), 30*0.75 + 30 + j * 30);
+          fill(255);
+          if (mouseOPressed && spamclick != mousePressed && abs((i * (20 * top_text[i].length()) + (20 * top_text[i].length() >> 1)) - mouseX) <= (10 * top_text[i].length()) && abs(30*0.75 + 30 + j * 30 - mouseY) <= 15) {
+            method(funcs[i][j]);
+            flg[i] = false;
+          }
+        }
+      }
+
+      rect(i * (20 * top_text[i].length()), 0, 20 * top_text[i].length(), 30);
+      fill(0);
+      text(top_text[i], i * (20 * top_text[i].length()), 30*0.75);
+      fill(255);
+    }
+  }
+}
+
+void freeKey(char[] value, int snuf) {
+  for (int i = value.length-1; i > snuf; i--) {
+    value[i] = value[i - 1];
+  }
+}
+
+void deleteKey(char[] value, int snuf) {
+  for (int i = snuf; i < value.length - 1; i++) {
+    value[i] = value[i + 1];
+  }
+}
