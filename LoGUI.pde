@@ -152,6 +152,7 @@ class Dropdown {
 
 class Window {
   boolean flag = false;
+  boolean preventOverlapping = false; 
   int x, y, w, h, d, bcol, tcol, tDX, tDY;
   String name;
   Slider[] slds;
@@ -176,8 +177,10 @@ class Window {
     fill(tcol);
     rect(x, y, w, d);
     fill(255);
-    text(name, x, y + ((float) d * 0.75));
-    if (flag || (mouseOPressed && abs((x + (w >> 1)) - mouseX) <= (w/2) && abs((y + (d >> 1)) - mouseY) <= (d / 2))) {
+    text(name, x + 10, y + ((float) d * 0.75));
+
+    // Handle dragging
+    if (flag || (mouseOPressed && abs((x + (w >> 1)) - mouseX) <= (w / 2) && abs((y + (d >> 1)) - mouseY) <= (d / 2))) {
       if (!mousePressed) {
         flag = false;
         return;
@@ -185,27 +188,29 @@ class Window {
       if (!flag) {
         tDX = mouseX - x;
         tDY = mouseY - y;
+        flag = true;
       }
+
+      
       int deltaX = mouseX - x - tDX;
       int deltaY = mouseY - y - tDY;
 
-      for (int i = 0; i < slds.length; i++) {
-        slds[i].move(deltaX, deltaY);
+      
+      if (deltaX != 0 || deltaY != 0) {
+        x += deltaX;
+        y += deltaY;
+
+        
+        moveElements(deltaX, deltaY);
+
+        
+        if (preventOverlapping) {
+            preventOverlap();
+        }
       }
-      for (int i = 0; i < btns.length; i++) {
-        btns[i].move(deltaX, deltaY);
-      }
-      for (int i = 0; i < togs.length; i++) {
-        togs[i].move(deltaX, deltaY);
-      }
-      for (int i = 0; i < drops.length; i++) {
-        drops[i].move(deltaX, deltaY);
-      }
-      x += deltaX;
-      y += deltaY;
-      flag = true;
     }
 
+    
     for (int i = 0; i < slds.length; i++) {
       slds[i].tick();
     }
@@ -218,6 +223,62 @@ class Window {
     for (int i = 0; i < drops.length; i++) {
       drops[i].tick();
     }
+  }
+
+  void moveElements(int deltaX, int deltaY) {
+    
+    for (int i = 0; i < slds.length; i++) {
+      slds[i].move(deltaX, deltaY);
+    }
+    for (int i = 0; i < btns.length; i++) {
+      btns[i].move(deltaX, deltaY);
+    }
+    for (int i = 0; i < togs.length; i++) {
+      togs[i].move(deltaX, deltaY);
+    }
+    for (int i = 0; i < drops.length; i++) {
+      drops[i].move(deltaX, deltaY);
+    }
+  }
+
+  void preventOverlap() {
+    if (!isOverlapping(this == win_player ? win_modify : win_player)) {
+        return;
+    }
+
+    Window other = this == win_player ? win_modify : win_player;
+    
+    
+    float overlapLeft = (x + w) - other.x;
+    float overlapRight = (other.x + other.w) - x;
+    float overlapTop = (y + h) - other.y;
+    float overlapBottom = (other.y + other.h) - y;
+
+    
+    float minOverlap = min(min(overlapLeft, overlapRight), min(overlapTop, overlapBottom));
+
+    int deltaX = 0;
+    int deltaY = 0;
+
+    
+    if (minOverlap == overlapLeft) {
+        deltaX = -(int)(overlapLeft + 10);
+    } else if (minOverlap == overlapRight) {
+        deltaX = (int)(overlapRight + 10);
+    } else if (minOverlap == overlapTop) {
+        deltaY = -(int)(overlapTop + 10);
+    } else if (minOverlap == overlapBottom) {
+        deltaY = (int)(overlapBottom + 10);
+    }
+
+    
+    x += deltaX;
+    y += deltaY;
+    moveElements(deltaX, deltaY);
+  }
+
+  boolean isOverlapping(Window other) {
+    return !(x + w < other.x || x > other.x + other.w || y + h < other.y || y > other.y + other.h);
   }
 }
 

@@ -1,5 +1,4 @@
-//import controlP5.*;
-//ControlP5 cp5;
+
 import processing.video.*;
 
 Movie[] movie;
@@ -30,6 +29,7 @@ void setup() {
   render = new Button(loadImage("render.png"), 20, 70, 50, 30, "render");
 
   win_player = new Window("Preview", 800, 0, 500, 300, 20);
+  win_player.preventOverlapping = false;
   win_player.slds = new Slider[1];
   win_player.slds[0] = sld;
   
@@ -43,6 +43,7 @@ void setup() {
   win_player.tcol = 50;
   
   win_modify = new Window("Modify", 0, 0, 200, 300, 20);
+  win_modify.preventOverlapping = false; 
   win_modify.slds = new Slider[0];
   win_modify.togs = new Toggle[0];
   win_modify.drops = new Dropdown[0];
